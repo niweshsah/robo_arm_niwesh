@@ -1,0 +1,16 @@
+<launch>
+  <!-- Load URDF into parameter server -->
+  <param name="robot_description" textfile="$(find arm_urdf)/urdf/arm_urdf.urdf"/>
+
+  <!-- Start Gazebo with the robot model -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+  </include>
+
+  <!-- Spawn the robot in Gazebo -->
+  <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -z 1.0 -model my_robot" respawn="false" output="screen"/>
+
+  <!-- Load and start controllers -->
+  <rosparam file="$(find arm_urdf)/config/joint_trajectory_controller.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" args="robot_arm_controller joint_state_controller" />
+</launch>
